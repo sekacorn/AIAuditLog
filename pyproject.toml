@@ -1,0 +1,103 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiauditlog"
+version = "0.1.0a3"
+description = "A vendor-neutral, tamper-evident audit-event format and local toolkit for AI systems and agents."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = { text = "MIT" }
+authors = [
+    { name = "sekacorn" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+    "Topic :: Security",
+    "Topic :: System :: Logging",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "cryptography>=48.0.1",
+    "pydantic>=2.7",
+    "pyyaml>=6",
+    "rfc8785>=0.1.4",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "bandit[toml]>=1.7",
+    "build>=1.2",
+    "mypy>=1.10",
+    "pip-audit>=2.7",
+    "pytest>=9.0.3",
+    "pytest-cov>=5",
+    "ruff>=0.5",
+    "twine>=5",
+]
+
+[project.urls]
+Homepage = "https://github.com/sekacorn/AIAuditLog"
+Repository = "https://github.com/sekacorn/AIAuditLog"
+Issues = "https://github.com/sekacorn/AIAuditLog/issues"
+Documentation = "https://github.com/sekacorn/AIAuditLog/tree/main/docs"
+
+[project.scripts]
+aiaudit = "ai_audit_log.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_audit_log"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/docs",
+    "/examples",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+exclude = [
+    "/dist",
+    "/build",
+    "/.env",
+    "/.venv",
+    "/reports",
+    "*.db",
+    "*.jsonl",
+    "*private*.pem",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["A", "B", "C4", "E", "F", "I", "N", "S", "UP", "W"]
+ignore = ["S101"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["ai_audit_log"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["ai_audit_log"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]

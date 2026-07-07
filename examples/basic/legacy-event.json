@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "id": "0190f1a0-0000-4000-8000-000000000010",
+  "type": "system.started",
+  "timestamp": "2026-07-06T12:00:00.000000Z",
+  "recorded_at": "2026-07-06T12:00:01.000000Z",
+  "source": {
+    "service": "legacy-service"
+  },
+  "actor": {
+    "actor_id": "system",
+    "actor_type": "system"
+  },
+  "outcome": {
+    "status": "success",
+    "code": "STARTED"
+  },
+  "payload": {}
+}

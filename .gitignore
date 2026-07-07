@@ -1,0 +1,17 @@
+build/
+dist/
+*.egg-info/
+.coverage
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite
+*.jsonl
+*.pem
+.env
+.venv/
+venv/
+htmlcov/

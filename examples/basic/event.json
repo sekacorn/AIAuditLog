@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "event_id": "0190f1a0-0000-4000-8000-000000000001",
+  "event_type": "model.invocation.completed",
+  "event_time": "2026-07-06T12:30:45.123456Z",
+  "recorded_time": "2026-07-06T12:30:45.223456Z",
+  "source": {
+    "service": "claims-agent",
+    "component": "model-router",
+    "instance_id": "instance-7",
+    "environment": "development",
+    "version": "0.1.0a1"
+  },
+  "actor": {
+    "actor_id": "agent-17",
+    "actor_type": "ai_agent",
+    "roles": ["claims-reviewer"],
+    "delegated_by": "user-204",
+    "session_id": "session-abc"
+  },
+  "subject": {
+    "subject_type": "claim",
+    "subject_id": "claim-1002",
+    "classification": "confidential"
+  },
+  "correlation": {
+    "request_id": "request-123",
+    "workflow_id": "workflow-88",
+    "run_id": "run-55",
+    "trace_id": "0123456789abcdef0123456789abcdef",
+    "span_id": "0123456789abcdef"
+  },
+  "outcome": {
+    "status": "success",
+    "code": "COMPLETED",
+    "reason": "Model returned a valid structured response."
+  },
+  "data": {
+    "provider": "example",
+    "model_name": "example-model",
+    "hosting_mode": "local",
+    "is_external": false,
+    "request_purpose": "claim triage",
+    "prompt_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "response_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+    "input_tokens": 128,
+    "output_tokens": 64,
+    "latency_ms": 1200,
+    "estimated_cost": "0.0025",
+    "temperature": "0.2",
+    "finish_reason": "stop",
+    "validation_result": "valid"
+  },
+  "policy": {},
+  "integrity": {},
+  "extensions": {}
+}

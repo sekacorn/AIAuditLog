@@ -1,0 +1,18 @@
+mode: minimal
+replacement: "[REDACTED]"
+redact_key_patterns:
+  - password
+  - passwd
+  - secret
+  - api_key
+  - token
+  - access_token
+  - refresh_token
+  - private_key
+  - authorization
+  - cookie
+  - credential
+hash_fields:
+  - "*.subject_id"
+hash_salt: "example-only-salt"
+omit_fields: []
