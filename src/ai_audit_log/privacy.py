@@ -84,8 +84,7 @@ def _matches(path: str, key: str, patterns: tuple[str, ...]) -> bool:
     lowered_key = key.lower()
     lowered_path = path.lower()
     return any(
-        fnmatch.fnmatch(lowered_key, pattern.lower())
-        or fnmatch.fnmatch(lowered_path, pattern.lower())
+        fnmatch.fnmatch(lowered_key, pattern.lower()) or fnmatch.fnmatch(lowered_path, pattern.lower())
         for pattern in patterns
     )
 
@@ -108,10 +107,7 @@ def redact_value(value: Any, profile: PrivacyProfile | None = None, path: str = 
     active = profile or PrivacyProfile()
     if isinstance(value, dict):
         if _classified_payload_should_redact(value, active, path):
-            return {
-                key: item if key == "classification" else active.replacement
-                for key, item in value.items()
-            }
+            return {key: item if key == "classification" else active.replacement for key, item in value.items()}
         result: dict[str, Any] = {}
         for key, item in value.items():
             child_path = f"{path}.{key}" if path else key

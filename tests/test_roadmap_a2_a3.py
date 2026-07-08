@@ -38,7 +38,7 @@ def example_event() -> AuditEvent:
 def test_rfc8785_sample_vector() -> None:
     sample = {
         "numbers": [333333333.33333329, 1e30, 4.50, 2e-3, 1e-27],
-        "string": "\u20ac$\u000f\nA'B\"\\\\\"/",
+        "string": '\u20ac$\u000f\nA\'B"\\\\"/',
         "literals": [None, True, False],
     }
     expected = (

@@ -161,9 +161,7 @@ class SQLiteIndex:
                     """
                 )
                 connection.execute("CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type)")
-                connection.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_events_stream_seq ON events(stream_id, sequence)"
-                )
+                connection.execute("CREATE INDEX IF NOT EXISTS idx_events_stream_seq ON events(stream_id, sequence)")
         finally:
             connection.close()
 

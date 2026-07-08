@@ -8,7 +8,7 @@ version = "0.1.0a3"
 description = "A vendor-neutral, tamper-evident audit-event format and local toolkit for AI systems and agents."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "sekacorn" }
 ]
@@ -43,6 +43,7 @@ dev = [
     "pytest-cov>=5",
     "ruff>=0.5",
     "twine>=5",
+    "types-PyYAML>=6",
 ]
 
 [project.urls]
@@ -64,6 +65,7 @@ include = [
     "/docs",
     "/examples",
     "/README.md",
+    "/CHANGELOG.md",
     "/LICENSE",
     "/pyproject.toml",
 ]

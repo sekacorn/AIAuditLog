@@ -155,17 +155,20 @@ def test_cli_acceptance_path(tmp_path: Path) -> None:
     assert RUNNER.invoke(app, ["checkpoint", "create", str(log), "--output", str(checkpoint)]).exit_code == 0
     assert RUNNER.invoke(app, ["checkpoint", "verify", str(checkpoint), "--log", str(log)]).exit_code == 0
     assert RUNNER.invoke(app, ["export", str(log), "--format", "markdown", "--output", str(report)]).exit_code == 0
-    assert RUNNER.invoke(
-        app,
-        [
-            "redact",
-            str(log),
-            "--profile",
-            str(ROOT / "examples/privacy/minimal.yaml"),
-            "--output",
-            str(redacted),
-        ],
-    ).exit_code == 0
+    assert (
+        RUNNER.invoke(
+            app,
+            [
+                "redact",
+                str(log),
+                "--profile",
+                str(ROOT / "examples/privacy/minimal.yaml"),
+                "--output",
+                str(redacted),
+            ],
+        ).exit_code
+        == 0
+    )
     assert RUNNER.invoke(app, ["schema", "list"]).exit_code == 0
     assert RUNNER.invoke(app, ["schema", "export", "--output", str(schemas)]).exit_code == 0
     assert report.exists()
@@ -190,8 +193,7 @@ def test_cli_signatures(tmp_path: Path) -> None:
         == 1
     )
     assert (
-        RUNNER.invoke(app, ["sign", str(checkpoint), "--private-key", str(private), "--key-id", "dev"]).exit_code
-        == 0
+        RUNNER.invoke(app, ["sign", str(checkpoint), "--private-key", str(private), "--key-id", "dev"]).exit_code == 0
     )
     assert RUNNER.invoke(app, ["signature", "verify", str(checkpoint), "--public-key", str(public)]).exit_code == 0
 
