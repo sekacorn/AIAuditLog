@@ -252,7 +252,7 @@ or generated distribution artifacts.
 
 ## License
 
-MIT.
+[Apache License 2.0](LICENSE).
 
 ## Author
 

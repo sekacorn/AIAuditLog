@@ -8,13 +8,13 @@ version = "0.1.0a3"
 description = "A vendor-neutral, tamper-evident audit-event format and local toolkit for AI systems and agents."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
-license = "MIT"
+license = "Apache-2.0"
 authors = [
     { name = "sekacorn" }
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
