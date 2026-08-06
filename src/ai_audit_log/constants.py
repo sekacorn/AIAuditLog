@@ -1,7 +1,7 @@
 """Project constants and built-in vocabularies."""
 
 SCHEMA_VERSION = "1.0"
-PACKAGE_VERSION = "0.1.0a3"
+PACKAGE_VERSION = "0.1.0a4"
 DIGEST_ALGORITHM = "sha256"
 CHAIN_ALGORITHM = "aiauditlog-sha256-chain-v1"
 SIGNATURE_ALGORITHM = "ed25519"

@@ -2,7 +2,12 @@
 
 All notable changes to AIAuditLog are documented here.
 
-## 0.1.0a3 - Unreleased
+## 0.1.0a4 - 2026-08-06
+
+- Publish corrected Apache-2.0 package metadata under the public maintainer identity `sekacorn`.
+- Preserve the existing tamper-evident audit toolkit and its documented alpha limitations.
+
+## 0.1.0a3
 
 - Add a versioned, typed audit-event envelope and packaged JSON Schema.
 - Add RFC 8785-backed serialization after AIAuditLog-specific value normalization.

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiauditlog"
-version = "0.1.0a3"
+version = "0.1.0a4"
 description = "A vendor-neutral, tamper-evident audit-event format and local toolkit for AI systems and agents."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"

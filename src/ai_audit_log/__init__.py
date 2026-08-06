@@ -42,4 +42,4 @@ __all__ = [
     "verify_checkpoint_policy",
 ]
 
-__version__ = "0.1.0a3"
+__version__ = "0.1.0a4"

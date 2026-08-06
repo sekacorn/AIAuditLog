@@ -3,7 +3,7 @@
 AIAuditLog provides portable, privacy-aware, tamper-evident evidence for AI
 models, agents, tools, policies, reviews, and workflow outcomes.
 
-This is an alpha release candidate for `0.1.0a3`. It is ready for public alpha
+This is an alpha release candidate for `0.1.0a4`. It is ready for public alpha
 release with documented limitations, not production certification.
 
 ## Why AI Audit Logs Are Different
@@ -216,7 +216,7 @@ Implemented in 0.1.0a3:
 The 0.1.0a3 adapters intentionally use plain dictionaries and are not claimed as
 externally tested against sibling packages.
 
-Next candidates for 0.1.0a4:
+Future alpha candidates:
 
 - Broader export test coverage for JSON, JSONL, CSV, Markdown, and compressed outputs.
 - Signed stream manifests.
