@@ -3,8 +3,8 @@
 AIAuditLog provides portable, privacy-aware, tamper-evident evidence for AI
 models, agents, tools, policies, reviews, and workflow outcomes.
 
-This is an alpha release candidate for `0.1.0a4`. It is ready for public alpha
-release with documented limitations, not production certification.
+AIAuditLog `0.1.0a4` is public alpha software with documented limitations, not
+production certification.
 
 ## Why AI Audit Logs Are Different
 
@@ -23,10 +23,10 @@ oriented, deterministic, and suitable for CI review.
 
 ## Ecosystem Position
 
-AIAuditLog is project six in the sekacorn AI infrastructure roadmap. It is
-designed for future optional integration with Forge, PrivateAIStack,
-ModelSwapBench, OpenOntologyLite, AgentPolicyPack, and OpenAIMeter. The first
-alpha works independently and offline.
+AIAuditLog is project six in the sekacorn AI infrastructure roadmap. It provides
+neutral, dictionary-based adapters for portable handoffs with Forge,
+PrivateAIStack, ModelSwapBench, OpenOntologyLite, AgentPolicyPack, and AIMeter
+without requiring those packages. AIAuditLog works independently and offline.
 
 ## Core Capabilities
 
@@ -40,7 +40,7 @@ alpha works independently and offline.
 - Stream rotation, lock-file guarded appends, compressed exports, and schema migration helpers.
 - Privacy modes, deterministic redaction, secret-key filtering, classification redaction, and CSV-safe export.
 - CLI and Python API.
-- Neutral adapter protocols for future ecosystem packages.
+- Neutral dictionary-based adapters and protocols for optional ecosystem handoffs.
 
 ## Event Architecture
 
