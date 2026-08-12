@@ -9,7 +9,7 @@ the project does not claim SLSA, in-toto, or SPDX compliance.
 
 Adapter protocols are prepared for Forge, AgentPolicyPack, ModelSwapBench,
 OpenOntologyLite, PrivateAIStack, and OpenAIMeter. No adapter is claimed as
-externally tested in this alpha.
+externally tested in this Beta.
 
 The `ai_audit_log.ecosystem` module adds neutral dictionary adapters for:
 

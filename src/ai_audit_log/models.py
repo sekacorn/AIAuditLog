@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
@@ -15,6 +16,13 @@ from pydantic import (
     model_validator,
 )
 
+from ai_audit_log.bounds import (
+    MAX_EVENT_BYTES,
+    MAX_EVENT_DEPTH,
+    MAX_EVENT_ITEMS,
+    MAX_EVENT_STRING_CHARS,
+    validate_bounded_structure,
+)
 from ai_audit_log.constants import (
     CLASSIFICATIONS,
     CORE_EVENT_TYPES,
@@ -310,9 +318,19 @@ class AuditEvent(StrictModel):
         return format_rfc3339(value)
 
     @model_validator(mode="after")
-    def validate_sequence_consistency(self) -> AuditEvent:
+    def validate_event_bounds(self) -> AuditEvent:
         if self.integrity.sequence is not None and self.integrity.sequence < 1:
             raise ValueError("sequence must begin at 1")
+        document = self.model_dump(mode="json", exclude_none=True)
+        validate_bounded_structure(
+            document,
+            label="event",
+            max_depth=MAX_EVENT_DEPTH,
+            max_items=MAX_EVENT_ITEMS,
+            max_string_chars=MAX_EVENT_STRING_CHARS,
+        )
+        if len(json.dumps(document, separators=(",", ":"), ensure_ascii=False).encode("utf-8")) > MAX_EVENT_BYTES:
+            raise ValueError("event exceeds maximum serialized size")
         return self
 
 

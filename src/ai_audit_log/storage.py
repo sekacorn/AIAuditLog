@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from ai_audit_log.bounds import MAX_EVENT_BYTES
 from ai_audit_log.models import AuditEvent
 
 
@@ -45,9 +46,11 @@ class JsonlStore:
         path: str | Path,
         *,
         fsync: bool = False,
-        max_line_bytes: int = 2_000_000,
+        max_line_bytes: int = MAX_EVENT_BYTES,
         use_lock: bool = False,
     ) -> None:
+        if isinstance(max_line_bytes, bool) or not 1 <= max_line_bytes <= MAX_EVENT_BYTES:
+            raise ValueError(f"max_line_bytes must be between 1 and {MAX_EVENT_BYTES}")
         self.path = Path(path)
         self.fsync = fsync
         self.max_line_bytes = max_line_bytes
@@ -63,12 +66,21 @@ class JsonlStore:
             return
         self._append_line(line)
 
-    def append_chained(self, event: AuditEvent, *, stream_id: str) -> AuditEvent:
-        """Append one event while holding the lock across read, chain, and write."""
+    def append_chained(
+        self,
+        event: AuditEvent,
+        *,
+        stream_id: str,
+        rotation_policy: Any | None = None,
+    ) -> AuditEvent:
+        """Append a chained event with local coordination across the full operation.
 
-        if not self.use_lock:
-            raise ValueError("append_chained requires JsonlStore(use_lock=True)")
+        Chained writes always take the local lock, regardless of ``use_lock``. This
+        coordinates cooperating local writers; it is not a distributed lock.
+        """
+
         from ai_audit_log.chain import append_integrity
+        from ai_audit_log.rotation import rotate_stream, rotation_decision
 
         with file_lock(self.path):
             existing = self.read_all()
@@ -79,6 +91,17 @@ class JsonlStore:
                 sequence=len(existing) + 1,
                 previous_event_digest=previous,
             )
+            if rotation_policy is not None:
+                decision = rotation_decision(self.path, rotation_policy, next_event=chained)
+                if decision.should_rotate and self.path.exists():
+                    rotate_stream(self.path, rotation_policy)
+                    # A rotated file is a complete, independently verifiable chain.
+                    chained = append_integrity(
+                        event,
+                        stream_id=stream_id,
+                        sequence=1,
+                        previous_event_digest=None,
+                    )
             self._append_line(self._event_line(chained))
             return chained
 

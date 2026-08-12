@@ -8,11 +8,11 @@ from ai_audit_log.models import Actor
 ```
 
 Use `EventBuilder` to create validated privacy-filtered events, `AuditRecorder`
-to append chained events, `JsonlStore` for JSONL streams, `SQLiteIndex` for
+to append chained events with local cooperating-writer coordination, `JsonlStore` for JSONL streams, `SQLiteIndex` for
 query indexing, `ChainVerifier` for integrity checks, and `Checkpoint` helpers
 for stream summaries.
 
-Additional alpha helpers:
+Additional helpers:
 
 - `ai_audit_log.rotation` for stream rotation policies.
 - `ai_audit_log.compression` for deterministic gzip files.
@@ -20,3 +20,8 @@ Additional alpha helpers:
 - `ai_audit_log.checkpoint_policy` for signed checkpoint policy checks.
 - `ai_audit_log.otel` for W3C Trace Context correlation helpers.
 - `ai_audit_log.ecosystem` for neutral dictionary adapters.
+
+Use `verify_signed_checkpoint(checkpoint, events, public_keys=...)` when both
+stream and signature verification are required. `verify_checkpoint_policy` is a
+signature policy helper and does not receive event records, so it cannot replace
+full stream verification.

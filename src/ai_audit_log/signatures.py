@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -82,7 +83,10 @@ class Ed25519KeyPair:
 def load_private_key(path: str | Path) -> Ed25519PrivateKey:
     """Load an Ed25519 private key from PEM."""
 
-    key = serialization.load_pem_private_key(Path(path).read_bytes(), password=None)
+    try:
+        key = serialization.load_pem_private_key(Path(path).read_bytes(), password=None)
+    except (OSError, TypeError, ValueError) as exc:
+        raise SignatureError("unable to load private key") from exc
     if not isinstance(key, Ed25519PrivateKey):
         raise SignatureError("private key is not Ed25519")
     return key
@@ -91,7 +95,10 @@ def load_private_key(path: str | Path) -> Ed25519PrivateKey:
 def load_public_key(path: str | Path) -> Ed25519PublicKey:
     """Load an Ed25519 public key from PEM."""
 
-    key = serialization.load_pem_public_key(Path(path).read_bytes())
+    try:
+        key = serialization.load_pem_public_key(Path(path).read_bytes())
+    except (OSError, TypeError, ValueError) as exc:
+        raise SignatureError("unable to load public key") from exc
     if not isinstance(key, Ed25519PublicKey):
         raise SignatureError("public key is not Ed25519")
     return key
@@ -125,9 +132,9 @@ def verify_payload_signature(
         raise SignatureError("signature fingerprint does not match public key")
     try:
         public_key.verify(
-            base64.b64decode(str(signature_record["signature"])),
+            base64.b64decode(str(signature_record["signature"]), validate=True),
             canonical_json_bytes(payload),
         )
-    except (InvalidSignature, KeyError, ValueError) as exc:
+    except (InvalidSignature, KeyError, ValueError, binascii.Error) as exc:
         raise SignatureError("signature verification failed") from exc
     return True

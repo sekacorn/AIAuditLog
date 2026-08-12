@@ -64,6 +64,22 @@ class ChainVerifier:
 
         for index, event in enumerate(events):
             integrity = event.integrity
+            if integrity.digest_algorithm != DIGEST_ALGORITHM:
+                issues.append(
+                    ChainIssue(
+                        index,
+                        "digest_algorithm",
+                        f"unsupported digest algorithm: {integrity.digest_algorithm}",
+                    )
+                )
+            if integrity.chain_algorithm != CHAIN_ALGORITHM:
+                issues.append(
+                    ChainIssue(
+                        index,
+                        "chain_algorithm",
+                        f"unsupported chain algorithm: {integrity.chain_algorithm}",
+                    )
+                )
             if integrity.stream_id is None:
                 issues.append(ChainIssue(index, "missing_stream", "event has no stream_id"))
             elif active_stream is None:

@@ -13,5 +13,8 @@ Timestamps must be timezone-aware and are serialized as UTC RFC
 3339-compatible strings with a `Z` suffix. Timestamps are not an ordering or
 integrity mechanism.
 
-Sequence numbers begin at `1`, increment by one within a stream, are included in
-event digests, and are checked during chain verification.
+Sequence numbers begin at `1`, increment by one within an individual JSONL
+stream file, are included in event digests, and are checked during chain
+verification. Automatic rotation creates a new independent JSONL chain at
+sequence `1`; verify each rotated file separately rather than concatenating
+files.

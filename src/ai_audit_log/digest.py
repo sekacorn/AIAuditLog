@@ -30,6 +30,19 @@ def sha256_digest(value: Any) -> str:
     return f"{DIGEST_ALGORITHM}:{sha256(canonical_json_bytes(value)).hexdigest()}"
 
 
+def is_sha256_digest(value: str) -> bool:
+    """Return whether a value has the supported formatted SHA-256 shape."""
+
+    prefix = f"{DIGEST_ALGORITHM}:"
+    if not value.startswith(prefix) or len(value) != len(prefix) + 64:
+        return False
+    try:
+        int(value[len(prefix) :], 16)
+    except ValueError:
+        return False
+    return True
+
+
 def event_digest(event: AuditEvent) -> str:
     """Calculate the event digest over the documented digest projection."""
 

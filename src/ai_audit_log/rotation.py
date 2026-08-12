@@ -17,6 +17,13 @@ class RotationPolicy:
     max_events: int | None = None
     suffix_width: int = 4
 
+    def __post_init__(self) -> None:
+        for name, value in (("max_bytes", self.max_bytes), ("max_events", self.max_events)):
+            if value is not None and (isinstance(value, bool) or value < 1):
+                raise ValueError(f"{name} must be a positive integer when provided")
+        if isinstance(self.suffix_width, bool) or not 1 <= self.suffix_width <= 8:
+            raise ValueError("suffix_width must be between 1 and 8")
+
 
 @dataclass(frozen=True)
 class RotationDecision:

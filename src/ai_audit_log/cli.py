@@ -9,8 +9,8 @@ from typing import Annotated
 import typer
 
 from ai_audit_log import __version__
-from ai_audit_log.chain import ChainVerifier, append_integrity
-from ai_audit_log.checkpoint import Checkpoint, create_checkpoint, verify_checkpoint
+from ai_audit_log.chain import ChainVerifier
+from ai_audit_log.checkpoint import Checkpoint, create_checkpoint, verify_signed_checkpoint
 from ai_audit_log.compression import gzip_file
 from ai_audit_log.exports import export_events
 from ai_audit_log.migration import migrate_event_document
@@ -90,24 +90,14 @@ def append(
     log: Annotated[Path, typer.Argument(help="JSONL log path.")],
     event: Annotated[Path, typer.Option("--event", help="Event JSON file.")],
     stream_id: Annotated[str, typer.Option("--stream-id")] = "default",
-    lock: Annotated[bool, typer.Option("--lock", help="Use lock-file guarded append.")] = False,
+    lock: Annotated[
+        bool, typer.Option("--lock", help="Retained for compatibility; chained appends always lock.")
+    ] = False,
 ) -> None:
     """Append an event to a JSONL stream with hash-chain metadata."""
 
     store = JsonlStore(log, use_lock=lock)
-    if lock:
-        chained = store.append_chained(_read_event(event), stream_id=stream_id)
-        _echo_json({"appended": chained.event_id, "sequence": chained.integrity.sequence})
-        return
-    existing = store.read_all()
-    previous = existing[-1].integrity.event_digest if existing else None
-    chained = append_integrity(
-        _read_event(event),
-        stream_id=stream_id,
-        sequence=len(existing) + 1,
-        previous_event_digest=previous,
-    )
-    store.append(chained)
+    chained = store.append_chained(_read_event(event), stream_id=stream_id)
     _echo_json({"appended": chained.event_id, "sequence": chained.integrity.sequence})
 
 
@@ -173,13 +163,33 @@ def checkpoint_create(
 def checkpoint_verify(
     checkpoint: Annotated[Path, typer.Argument(help="Checkpoint JSON path.")],
     log: Annotated[Path, typer.Option("--log", help="JSONL log path.")],
+    public_key: Annotated[
+        Path | None, typer.Option("--public-key", help="Require a valid checkpoint signature from this key.")
+    ] = None,
 ) -> None:
     """Verify a checkpoint against a log."""
 
     loaded = Checkpoint.model_validate_json(checkpoint.read_text(encoding="utf-8"))
-    result = verify_checkpoint(loaded, _read_log(log))
-    _echo_json({"ok": result.ok, "issues": result.issues})
-    if not result.ok:
+    if public_key is None:
+        from ai_audit_log.checkpoint import verify_checkpoint
+
+        checkpoint_result = verify_checkpoint(loaded, _read_log(log))
+        _echo_json({"ok": checkpoint_result.ok, "issues": checkpoint_result.issues})
+        if not checkpoint_result.ok:
+            raise typer.Exit(1)
+        return
+    public = load_public_key(public_key)
+    keys = {str(record["key_id"]): public for record in loaded.signatures}
+    signed_result = verify_signed_checkpoint(loaded, _read_log(log), public_keys=keys)
+    signature_issues = signed_result.signatures.issues if signed_result.signatures is not None else []
+    _echo_json(
+        {
+            "ok": signed_result.ok,
+            "checkpoint_issues": signed_result.checkpoint.issues,
+            "signature_issues": signature_issues,
+        }
+    )
+    if not signed_result.ok:
         raise typer.Exit(1)
 
 
@@ -226,7 +236,7 @@ def migrate(
     event: Annotated[Path, typer.Argument(help="Event JSON file.")],
     output: Annotated[Path, typer.Option("--output", help="Migrated output path.")],
 ) -> None:
-    """Migrate an early alpha event document to the current schema version."""
+    """Migrate an early pre-release event document to the current schema version."""
 
     document = json.loads(event.read_text(encoding="utf-8"))
     result = migrate_event_document(document)
@@ -317,7 +327,7 @@ def signature_verify(
     public = load_public_key(public_key)
     for signature in loaded.signatures:
         verify_payload_signature(loaded.unsigned_payload(), signature, public)
-    _echo_json({"ok": True, "signature_count": len(loaded.signatures)})
+    _echo_json({"raw_signature_valid": True, "signature_count": len(loaded.signatures)})
 
 
 @app.command()

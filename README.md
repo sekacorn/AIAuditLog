@@ -3,7 +3,7 @@
 AIAuditLog provides portable, privacy-aware, tamper-evident evidence for AI
 models, agents, tools, policies, reviews, and workflow outcomes.
 
-AIAuditLog `0.1.0a4` is public alpha software with documented limitations, not
+AIAuditLog `0.2.0b1` is public Beta software with documented limitations, not
 production certification.
 
 ## Why AI Audit Logs Are Different
@@ -37,7 +37,7 @@ without requiring those packages. AIAuditLog works independently and offline.
 - Optional hash-chain metadata for tamper evidence.
 - Checkpoints, optional Ed25519 checkpoint signatures, and signature policies.
 - JSONL storage and SQLite indexing.
-- Stream rotation, lock-file guarded appends, compressed exports, and schema migration helpers.
+- Stream rotation with independently verifiable files, coordinated chained appends, compressed exports, and schema migration helpers.
 - Privacy modes, deterministic redaction, secret-key filtering, classification redaction, and CSV-safe export.
 - CLI and Python API.
 - Neutral dictionary-based adapters and protocols for optional ecosystem handoffs.
@@ -105,6 +105,13 @@ aiaudit verify build/audit.jsonl
 Hash chaining is tamper-evident, not immutable. An attacker who can rewrite an
 entire unsigned log can recompute the chain.
 
+`AuditRecorder` and `aiaudit append` coordinate cooperating local writers with
+a lock held across read, chain construction, rotation, and append. This is not
+a distributed lock and cannot protect writers that bypass AIAuditLog. Automatic
+rotation starts the new active JSONL file at sequence `1` with no previous
+digest, so each rotated file is independently verifiable. Do not concatenate
+rotated files before verification.
+
 ## Privacy Modes
 
 The default mode is `minimal`: identifiers, metadata, hashes, counts, outcomes,
@@ -124,10 +131,13 @@ legal non-repudiation, or correct key custody.
 aiaudit checkpoint create build/audit.jsonl --output build/checkpoint.json
 aiaudit key generate --private-key build/development-private.pem --public-key build/development-public.pem
 aiaudit sign build/checkpoint.json --private-key build/development-private.pem --key-id development-key
-aiaudit signature verify build/checkpoint.json --public-key build/development-public.pem
+aiaudit checkpoint verify build/checkpoint.json --log build/audit.jsonl --public-key build/development-public.pem
 ```
 
-Never commit generated private keys.
+`aiaudit signature verify` remains available for raw signature bytes only. Use
+`aiaudit checkpoint verify --log ... --public-key ...` when a signature must be
+accepted only after checkpoint and stream integrity succeed. Never commit
+generated private keys.
 
 ## CLI Examples
 
@@ -172,6 +182,8 @@ certification, a SIEM, or policy enforcement.
 - SQLite is not tamper-proof.
 - Full-content logging may expose sensitive data.
 - Redaction and secret detection are heuristic and not perfect.
+- Privacy redaction is key and pattern based; it does not discover every secret
+  embedded in arbitrary prose.
 - Adapters depend on external framework APIs.
 - Event completeness depends on correct instrumentation.
 - Missing events cannot always be distinguished from actions that never occurred.
@@ -180,8 +192,8 @@ certification, a SIEM, or policy enforcement.
 - Compliance mappings are informational.
 - This project is not legal advice.
 - The schema may evolve before version 1.0.
-- External anchoring and trusted timestamping are not included in this alpha.
-- Concurrent multi-process writing has documented limitations unless explicitly tested.
+- External anchoring and trusted timestamping are not included in this Beta.
+- Coordinated chained writes require a shared local filesystem and cooperating writers.
 
 ## Interoperability
 
@@ -192,9 +204,9 @@ Context or OpenTelemetry identifiers, and helper functions can parse and emit
 `traceparent` values. CloudEvents concepts influenced envelope naming, but this
 package does not claim CloudEvents compliance.
 
-## Roadmap
+## Release History
 
-Implemented in 0.1.0a2:
+Earlier alpha work included:
 
 - RFC8785-backed canonicalization with an RFC8785 sample vector.
 - Signed checkpoint policies.
@@ -204,7 +216,7 @@ Implemented in 0.1.0a2:
 - Lock-file guarded appends.
 - Conservative schema migration helpers.
 
-Implemented in 0.1.0a3:
+Later alpha work included:
 
 - Neutral Forge-like agent step adapter.
 - Neutral AgentPolicyPack-like policy decision adapter.
@@ -216,16 +228,13 @@ Implemented in 0.1.0a3:
 The 0.1.0a3 adapters intentionally use plain dictionaries and are not claimed as
 externally tested against sibling packages.
 
-Future alpha candidates:
+Deferred enhancements:
 
 - Broader export test coverage for JSON, JSONL, CSV, Markdown, and compressed outputs.
 - Signed stream manifests.
 - Stronger rotation manifests and rotation verification.
 - More complete schema migration fixtures.
 - Optional dependency-license report generation.
-- Improved concurrent-writer stress tests.
-
-0.2 candidates:
 
 - External checkpoint anchoring.
 - Optional PostgreSQL storage.

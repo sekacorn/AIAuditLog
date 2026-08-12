@@ -2,7 +2,7 @@
 
 from ai_audit_log.builder import EventBuilder
 from ai_audit_log.chain import ChainVerifier, append_integrity
-from ai_audit_log.checkpoint import Checkpoint
+from ai_audit_log.checkpoint import Checkpoint, verify_signed_checkpoint
 from ai_audit_log.checkpoint_policy import CheckpointSignaturePolicy, verify_checkpoint_policy
 from ai_audit_log.compression import gzip_file
 from ai_audit_log.digest import event_digest
@@ -40,6 +40,7 @@ __all__ = [
     "redact_value",
     "traceparent_from_correlation",
     "verify_checkpoint_policy",
+    "verify_signed_checkpoint",
 ]
 
-__version__ = "0.1.0a4"
+__version__ = "0.2.0b1"

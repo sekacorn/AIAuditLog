@@ -7,7 +7,8 @@ from typing import Any
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-from ai_audit_log.checkpoint import Checkpoint
+from ai_audit_log.checkpoint import Checkpoint, checkpoint_structure_issues, verify_checkpoint_digest
+from ai_audit_log.exceptions import SignatureError
 from ai_audit_log.signatures import public_key_fingerprint, verify_payload_signature
 
 
@@ -42,6 +43,10 @@ def verify_checkpoint_policy(
     issues: list[str] = []
     accepted = 0
 
+    integrity_issues = checkpoint_structure_issues(checkpoint) + verify_checkpoint_digest(checkpoint)
+    if integrity_issues:
+        return CheckpointPolicyResult(ok=False, issues=integrity_issues)
+
     if active_policy.require_signature and not checkpoint.signatures:
         return CheckpointPolicyResult(ok=False, issues=["checkpoint has no signatures"])
 
@@ -61,8 +66,11 @@ def verify_checkpoint_policy(
         if fingerprint and fingerprint != public_key_fingerprint(public_key):
             issues.append(f"signature fingerprint does not match public key: {key_id}")
             continue
-        if _verify_one(checkpoint, record, public_key):
-            accepted += 1
+        try:
+            if _verify_one(checkpoint, record, public_key):
+                accepted += 1
+        except SignatureError:
+            issues.append(f"invalid signature for key_id: {key_id}")
 
     if accepted < active_policy.minimum_signatures:
         issues.append("minimum signature count not satisfied")

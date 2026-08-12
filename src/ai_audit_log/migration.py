@@ -18,9 +18,9 @@ class MigrationResult:
 
 
 def migrate_event_document(document: dict[str, Any], *, target_schema_version: str = SCHEMA_VERSION) -> MigrationResult:
-    """Migrate a JSON-like event document to the current alpha schema.
+    """Migrate a JSON-like event document to the current pre-release schema.
 
-    This alpha helper intentionally supports only conservative field aliases
+    This helper intentionally supports only conservative field aliases
     observed in early examples. Unknown future schema versions fail closed.
     """
 

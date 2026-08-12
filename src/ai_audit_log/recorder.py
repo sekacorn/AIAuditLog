@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from ai_audit_log.builder import EventBuilder
-from ai_audit_log.chain import append_integrity
 from ai_audit_log.models import AuditEvent, Outcome
-from ai_audit_log.rotation import RotationPolicy, rotate_stream, rotation_decision
+from ai_audit_log.rotation import RotationPolicy
 from ai_audit_log.storage import JsonlStore, SQLiteIndex
 
 
@@ -30,19 +29,11 @@ class AuditRecorder:
     def append_event(self, event: AuditEvent) -> AuditEvent:
         """Append an existing event with the next chain values."""
 
-        existing = self.store.read_all()
-        previous = existing[-1].integrity.event_digest if existing else None
-        chained = append_integrity(
+        chained = self.store.append_chained(
             event,
             stream_id=self.stream_id,
-            sequence=len(existing) + 1,
-            previous_event_digest=previous,
+            rotation_policy=self.rotation_policy,
         )
-        if self.rotation_policy is not None:
-            decision = rotation_decision(self.store.path, self.rotation_policy, next_event=chained)
-            if decision.should_rotate and self.store.path.exists():
-                rotate_stream(self.store.path, self.rotation_policy)
-        self.store.append(chained)
         if self.index is not None:
             self.index.append(chained)
         return chained

@@ -2,6 +2,16 @@
 
 All notable changes to AIAuditLog are documented here.
 
+## 0.2.0b1 - 2026-08-12
+
+- First Beta candidate.
+- Coordinate chained JSONL recorder and CLI appends across cooperating local writers.
+- Make automatically rotated JSONL files independently verifiable chains.
+- Reject unsupported declared chain and digest algorithms during verification.
+- Harden checkpoint and signature verification and add complete stream-plus-signature verification.
+- Add practical event and privacy-profile resource limits and stricter profile loading.
+- Expand integrity, privacy, rotation, and concurrency regression coverage.
+
 ## 0.1.0a4 - 2026-08-06
 
 - Publish corrected Apache-2.0 package metadata under the public maintainer identity `sekacorn`.
