@@ -9,6 +9,7 @@ from threading import Barrier
 import pytest
 from pydantic import ValidationError
 
+from ai_audit_log.bounds import MAX_PROFILE_BYTES
 from ai_audit_log.builder import EventBuilder
 from ai_audit_log.chain import ChainVerifier, append_integrity
 from ai_audit_log.checkpoint import Checkpoint, create_checkpoint, verify_checkpoint, verify_signed_checkpoint
@@ -20,6 +21,27 @@ from ai_audit_log.recorder import AuditRecorder
 from ai_audit_log.rotation import RotationPolicy
 from ai_audit_log.signatures import Ed25519KeyPair, sign_payload, verify_payload_signature
 from ai_audit_log.storage import JsonlStore
+
+
+def test_oversized_profile_uses_bounded_read(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    path = tmp_path / "large.yaml"
+    path.write_bytes(b"#" * (MAX_PROFILE_BYTES * 2))
+    with path.open("rb") as stream:
+
+        class Reader:
+            def __enter__(self) -> Reader:
+                return self
+
+            def __exit__(self, *args: object) -> None:
+                pass
+
+            def read(self, size: int) -> bytes:
+                assert size == MAX_PROFILE_BYTES + 1
+                return stream.read(size)
+
+        monkeypatch.setattr(Path, "open", lambda *args, **kwargs: Reader())
+        with pytest.raises(ValueError, match="maximum file size"):
+            PrivacyProfile.from_file(str(path))
 
 
 def make_event(index: int = 0) -> AuditEvent:
