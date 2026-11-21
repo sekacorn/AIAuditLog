@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import fnmatch
 import hashlib
-from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import yaml
 from yaml.events import AliasEvent
@@ -117,17 +116,17 @@ class PrivacyProfile:
     def from_file(cls, path: str) -> PrivacyProfile:
         """Load a YAML or JSON-like privacy profile."""
 
-        raw = Path(path).read_bytes()
+        with Path(path).open("rb") as stream:
+            raw = stream.read(MAX_PROFILE_BYTES + 1)
         if len(raw) > MAX_PROFILE_BYTES:
             raise ValueError("privacy profile exceeds maximum file size")
         if any(isinstance(event, AliasEvent) for event in yaml.parse(raw, Loader=yaml.SafeLoader)):
             raise ValueError("privacy profile YAML aliases are not supported")
         loader = _UniqueKeySafeLoader(raw)
-        dispose = cast(Callable[[], None], loader.dispose)
         try:
             loaded = loader.get_single_data() or {}
         finally:
-            dispose()
+            getattr(loader, "dispose")()  # noqa: B009 - works across PyYAML stub versions
         if not isinstance(loaded, dict):
             raise ValueError("privacy profile root must be a mapping")
         validate_bounded_structure(
