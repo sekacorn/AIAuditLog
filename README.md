@@ -3,7 +3,7 @@
 AIAuditLog provides portable, privacy-aware, tamper-evident evidence for AI
 models, agents, tools, policies, reviews, and workflow outcomes.
 
-AIAuditLog `0.2.0b1` is public Beta software with documented limitations, not
+AIAuditLog `0.2.0b2` is public Beta software with documented limitations, not
 production certification.
 
 ## Why AI Audit Logs Are Different

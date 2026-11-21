@@ -4,7 +4,9 @@ All notable changes to AIAuditLog are documented here.
 
 ## Unreleased
 
-- Bound privacy-profile reads to the configured byte limit plus one size-check byte before YAML parsing.
+## 0.2.0b2 - 2026-11-21
+
+- Bound privacy-profile reads to the configured byte limit plus one size-check byte before YAML parsing, with a regression test.
 
 ## 0.2.0b1 - 2026-08-12
 
