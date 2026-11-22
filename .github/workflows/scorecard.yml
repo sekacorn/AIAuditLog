@@ -21,7 +21,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: ossf/scorecard-action@v2.4.0
+      # v2.4.0 pulled gcr.io/openssf/scorecard-action, a registry that stopped
+      # serving pulls, so every scheduled run failed from 2026-09-01 onward.
+      # v2.6.0 pulls ghcr.io/ossf/scorecard-action instead. Pinned by SHA: this
+      # action publishes no floating major tag, so an exact reference is
+      # unavoidable, and an exact version tag is precisely what rotted.
+      - uses: ossf/scorecard-action@23f22cd43608bae7a1f1fa2603d7314dee9538a5 # v2.6.0
         with:
           results_file: scorecard-results.sarif
           results_format: sarif
