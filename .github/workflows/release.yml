@@ -114,4 +114,8 @@ jobs:
           fi
           echo "Confirmed a real release: event=${EVENT} dry_run='${DRY_RUN}'"
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      # Pinned by commit SHA rather than the release/v1 branch. A branch ref is
+      # the most mutable reference available, and this is the step that uploads
+      # to PyPI. This SHA is release/v1's head today, which is also the
+      # dereferenced v1.14.3 tag and the pin ModelSwapBench already carries.
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
