@@ -171,6 +171,10 @@ admissibility. It provides local tamper evidence and optional checkpoint
 signatures. It does not provide immutable storage, identity proofing, legal
 certification, a SIEM, or policy enforcement.
 
+**Advisories.** None have been published for `aiauditlog`. See [SECURITY.md](SECURITY.md) for how
+to report a vulnerability; published advisories appear at
+[github.com/sekacorn/AIAuditLog/security/advisories](https://github.com/sekacorn/AIAuditLog/security/advisories).
+
 ## Threat Model And Limitations
 
 - Hash chaining is tamper-evident, not immutable.
@@ -205,6 +209,15 @@ Context or OpenTelemetry identifiers, and helper functions can parse and emit
 package does not claim CloudEvents compliance.
 
 ## Release History
+
+Beta releases (see the [changelog](CHANGELOG.md) for details):
+
+- `0.2.0b2` (latest): privacy-profile reads are bounded to the configured byte limit before
+  YAML parsing.
+- `0.2.0b1`: first Beta. Chained JSONL appends coordinate across cooperating local writers;
+  rotated files are independently verifiable chains; unsupported chain and digest algorithms
+  are refused; checkpoint, signature and full stream-plus-signature verification are hardened;
+  event and privacy-profile resource limits.
 
 Earlier alpha work included:
 
